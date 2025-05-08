@@ -1,11 +1,5 @@
 from app import crear_app
 
-# git init
-# git add README.md
-# git commit -m "first commit"
-# git branch -M main
-# git remote add origin https://github.com/RayXD7/Plataforma-Educativa.git
-# git push -u origin main
 
 def funcion_principal():
     app = crear_app()

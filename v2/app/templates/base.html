@@ -9,6 +9,9 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% block styles %}
+
+    {% endblock %}
 </head>
 
 <body>
@@ -63,71 +66,14 @@
     {% endif %}
 
     <!-- Main Content -->
-    <div class="container my-5">
+    <main>
         {% block content %}
         {% endblock %}
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5>Plataforma Educativa</h5>
-                    <p class="text-muted">Transformando la educación con tecnología innovadora y experiencias de
-                        aprendizaje personalizadas.</p>
-                    <div class="social-icons mt-3">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h5>Enlaces</h5>
-                    <ul>
-                        <li><a href="#">Inicio</a></li>
-                        <li><a href="#">Cursos</a></li>
-                        <li><a href="#">Instructores</a></li>
-                        <li><a href="#">Eventos</a></li>
-                        <li><a href="#">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h5>Soporte</h5>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Contacto</a></li>
-                        <li><a href="#">Ayuda</a></li>
-                        <li><a href="#">Términos</a></li>
-                        <li><a href="#">Privacidad</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h5>Suscríbete</h5>
-                    <p class="text-muted">Recibe noticias y actualizaciones sobre nuevos cursos.</p>
-                    <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Tu email" aria-label="Tu email">
-                        <button class="btn btn-primary" type="button">Suscribir</button>
-                    </div>
-                </div>
-            </div>
-            <hr class="mt-4 mb-4" style="background-color: rgba(255,255,255,0.1);">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 text-muted">&copy; 2024 Plataforma Educativa. Todos los derechos reservados.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="mb-0 text-muted">Diseñado con <i class="fas fa-heart text-danger"></i> para educadores y
-                        estudiantes</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    </main>
 
     <!-- Flash Messages -->
     <div id="flash-messages">
-        {% include 'flash-message.html' %}
+        {% include 'components/flash-message.html' %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

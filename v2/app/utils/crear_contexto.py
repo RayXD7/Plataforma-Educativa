@@ -3,6 +3,7 @@ from ..models.actividad import Actividad
 from ..models.comentario import Comentario
 from ..models.facultad import Facultad
 from ..models.usuario import Usuario
+from ..models.roles import *
 from ..models.encuesta import *
 from ..models.auxiliar import *
 
