@@ -46,4 +46,44 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Add subtle animation to the login card on hover
+    const loginCard = document.querySelector('.login-card');
+    if (loginCard) {
+        loginCard.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x position within the element
+            const y = e.clientY - rect.top;  // y position within the element
+            
+            // Calculate rotation based on mouse position
+            // The rotation will be subtle, max 2 degrees
+            const rotateX = (y / rect.height - 0.5) * -4;
+            const rotateY = (x / rect.width - 0.5) * 4;
+            
+            this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+        });
+        
+        loginCard.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+    }
+    
+    // Add focus effect to input groups
+    const inputGroups = document.querySelectorAll('.input-group');
+    inputGroups.forEach(group => {
+        const input = group.querySelector('.form-control');
+        const icon = group.querySelector('.input-group-text i');
+        
+        if (input && icon) {
+            input.addEventListener('focus', function() {
+                icon.style.color = 'var(--primary-color)';
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    icon.style.color = '';
+                }
+            });
+        }
+    });
 });

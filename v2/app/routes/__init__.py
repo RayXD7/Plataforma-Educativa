@@ -6,3 +6,6 @@ def registrar_rutas(app:Flask):
     
     from .auth import auth_bp
     app.register_blueprint(auth_bp)
+    
+    from .admin import admin_bp
+    app.register_blueprint(admin_bp)

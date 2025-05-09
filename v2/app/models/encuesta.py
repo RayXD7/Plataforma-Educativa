@@ -17,6 +17,7 @@ class Encuesta(db.Model):
     # opciones      = Column(String(255))  # Opciones de la encuesta
     
     creado_en     = Column(DateTime, default=db.func.current_timestamp())
+    respuestas = relationship("Respuesta", back_populates="encuesta", cascade="all, delete-orphan")
 
 class Respuesta(db.Model):
     __tablename__ = 'respuesta'

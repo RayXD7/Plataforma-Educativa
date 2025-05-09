@@ -1,5 +1,7 @@
-from flask import render_template, request, redirect, url_for, flash, Blueprint
-from flask_login import login_user, login_required, logout_user
+from flask import render_template, redirect, url_for, flash, Blueprint
+from flask_login import current_user, login_user, login_required, logout_user
+
+from werkzeug.security import check_password_hash
 
 from app.models.usuario import Usuario
 from app.forms.usuario import LoginForm
@@ -9,16 +11,23 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = Usuario.query.filter_by(username=username).first()
-        if user and user.password == password:  # Usa hash en producción
-            login_user(user)
-            return redirect(url_for('index'))
-        else:
-            flash('Usuario o contraseña incorrectos')
-    return render_template('auth/login.html', form=LoginForm())
+    if current_user.is_authenticated:
+        return redirect(url_for('admin.dashboard',))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = Usuario.query.filter_by(usuario=form.usuario.data).first()
+            if user and check_password_hash(user.clave, form.clave.data):
+                login_user(user)
+                flash('Bienvenido, ' + user.usuario)
+                return redirect(url_for('admin.dashboard'))  # Dashboard único
+            else:
+                flash('Usuario o contraseña incorrectos', 'danger')
+        except Exception as e:
+            flash(f'Error al iniciar sesión: {str(e)}', 'danger')
+    return render_template('auth/login.html', form=form)
+
 
 @auth_bp.route('/logout')
 @login_required
