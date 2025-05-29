@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'components/navbar-dash.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header animate-on-scroll">
+        <div class="user-welcome">
+            <div class="user-avatar">
+                <span>{{ current_user.usuario[0].upper() }}</span>
+            </div>
+            <div class="user-info">
+                <h2>Bienvenido, {{ current_user.usuario }}</h2>
+                <div class="user-role">
+                    <span class="role-badge 
+                        {% if current_user.rol == 'administrador' %}
+        role-admin
+    {% elif current_user.rol == 'profesor' %}
+        role-teacher
+    {% elif current_user.rol == 'jefe_departamento' %}
+        role-head
+    {% else %}
+        role-student
+    {% endif %}
+">
+                        {# Muestra el nombre legible del rol #}
+                        {% if current_user.rol == 'administrador' %}
+                        Administrador
+                        {% elif current_user.rol == 'profesor' %}
+                        Profesor
+                        {% elif current_user.rol == 'jefe_departamento' %}
+                        Jefe de Departamento
+                        {% else %}
+                        Estudiante
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-actions">
+            <div class="date-display">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="current-date">Cargando fecha...</span>
+            </div>
+            <button class="btn btn-outline-primary btn-sm refresh-dashboard">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="dashboard-stats">
+        <div class="stat-card animate-on-scroll">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+                <h3>12</h3>
+                <p>Actividades</p>
+            </div>
+        </div>
+        <div class="stat-card animate-on-scroll" style="animation-delay: 0.1s;">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>48</h3>
+                <p>Usuarios</p>
+            </div>
+        </div>
+        <div class="stat-card animate-on-scroll" style="animation-delay: 0.2s;">
+            <div class="stat-icon">
+                <i class="fas fa-poll"></i>
+            </div>
+            <div class="stat-content">
+                <h3>5</h3>
+                <p>Encuestas</p>
+            </div>
+        </div>
+        <div class="stat-card animate-on-scroll" style="animation-delay: 0.3s;">
+            <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-content">
+                <h3>85%</h3>
+                <p>Completado</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role-based Dashboard Cards -->
+    <h3 class="section-title animate-on-scroll">Panel de Control</h3>
+
+    <div class="row dashboard-cards">
+        {% if current_user.rol.value == 'administrador' %}
+        <!-- Admin Cards -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll">
+                <div class="card-icon admin-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Gestión del Sistema</h5>
+                    <p>Gestiona usuarios, roles, configuraciones y más.</p>
+                    <a href="{{ url_for('admin.list_users') }}" class="btn btn-primary">
+                        <i class="fas fa-users me-2"></i>Ver Usuarios
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="card-icon admin-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Reportes y Estadísticas</h5>
+                    <p>Visualiza estadísticas y genera reportes del sistema.</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-2"></i>Ver Reportes
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        {% elif current_user.rol.value == 'profesor' %}
+        <!-- Teacher Cards -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll">
+                <div class="card-icon teacher-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Gestión Académica</h5>
+                    <p>Accede a tus cursos y gestión de estudiantes.</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-book me-2"></i>Ver Cursos
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.1s;">
+                <div class="card-icon teacher-icon">
+                    <i class="fas fa-poll"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Participar en Encuestas</h5>
+                    <p>Consulta las encuestas disponibles y participa en ellas.</p>
+                    <a href="{{ url_for('teacher.view_surveys') }}" class="btn btn-primary">
+                        <i class="fas fa-eye me-2"></i>Ver Encuestas
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="card-icon teacher-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Listar Actividades</h5>
+                    <p>Visualiza todas las actividades disponibles en el sistema.</p>
+                    <a href="{{ url_for('teacher.list_activities') }}" class="btn btn-primary">
+                        <i class="fas fa-list me-2"></i>Ver Actividades
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        {% elif current_user.rol.value == 'jefe_departamento' %}
+        <!-- Department Head Cards -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll">
+                <div class="card-icon head-icon">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Gestión Departamental</h5>
+                    <p>Administra profesores y recursos de tu departamento.</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-users-cog me-2"></i>Gestionar
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.1s;">
+                <div class="card-icon head-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Aprobación de Actividades</h5>
+                    <p>Revisa y aprueba actividades propuestas por profesores.</p>
+                    <a href="{{ url_for('jefe_departamento.list_activities') }}" class="btn btn-primary">
+                        <i class="fas fa-check-circle me-2"></i>Revisar
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="card-icon head-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Reportes Departamentales</h5>
+                    <p>Visualiza estadísticas y rendimiento de tu departamento.</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-2"></i>Ver Reportes
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Student Cards -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll">
+                <div class="card-icon student-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Mi Progreso</h5>
+                    <p>Consulta tu rendimiento académico y acceso a encuestas.</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-2"></i>Ver Progreso
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.1s;">
+                <div class="card-icon student-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Retroalimentación</h5>
+                    <p>Accede a comentarios sobre tu desempeño académico.</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-comment-dots me-2"></i>Ver Comentarios
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="card-icon student-icon">
+                    <i class="fas fa-poll"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Participar en Encuestas</h5>
+                    <p>Consulta las encuestas disponibles y participa en ellas.</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-check-circle me-2"></i>Participar
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="dashboard-card animate-on-scroll" style="animation-delay: 0.4s;">
+                <div class="card-icon student-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="card-content">
+                    <h5>Listar Actividades</h5>
+                    <p>Visualiza todas las actividades disponibles en el sistema.</p>
+                    <a href="{{ url_for('student.list_activities') }}" class="btn btn-primary">
+                        <i class="fas fa-users me-2"></i>Ver Actividades
+                    </a>
+                </div>
+                <div class="card-decoration"></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="recent-activity animate-on-scroll">
+        <h3 class="section-title">Actividad Reciente</h3>
+        <div class="activity-timeline">
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="timeline-content">
+                    <h5>Encuesta completada</h5>
+                    <p>Has completado la encuesta de satisfacción del curso.</p>
+                    <span class="timeline-date"><i class="far fa-clock me-1"></i>Hace 2 horas</span>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="timeline-content">
+                    <h5>Nueva actividad creada</h5>
+                    <p>Se ha creado una nueva actividad en el sistema.</p>
+                    <span class="timeline-date"><i class="far fa-clock me-1"></i>Ayer</span>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <div class="timeline-content">
+                    <h5>Nuevo comentario</h5>
+                    <p>Has recibido un nuevo comentario en tu actividad.</p>
+                    <span class="timeline-date"><i class="far fa-clock me-1"></i>Hace 3 días</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', options);
+
+        // Animate elements on scroll
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // Refresh button animation
+        const refreshBtn = document.querySelector('.refresh-dashboard');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function () {
+                this.querySelector('i').classList.add('fa-spin');
+                setTimeout(() => {
+                    this.querySelector('i').classList.remove('fa-spin');
+
+                    // Show a toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'dashboard-toast';
+                    toast.innerHTML = '<i class="fas fa-check-circle me-2"></i> Dashboard actualizado';
+                    document.body.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.classList.add('show');
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                        setTimeout(() => {
+                            document.body.removeChild(toast);
+                        }, 500);
+                    }, 3000);
+
+                }, 1000);
+            });
+        }
+
+        // Add hover effect to dashboard cards
+        const dashboardCards = document.querySelectorAll('.dashboard-card');
+        dashboardCards.forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.classList.add('hover');
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.classList.remove('hover');
+            });
+        });
+    });
+</script>
+{% endblock %}

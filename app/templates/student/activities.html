@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student/activities.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'components/navbar-dash.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="page-header animate-on-scroll d-flex justify-content-between align-items-center">
+        <div class="header-content">
+            <h2><i class="fas fa-tasks me-3"></i>Gestión de Actividades</h2>
+            <p class="text-muted">Administra las actividades del sistema</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('student.create_activity') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Crear Nueva Actividad
+            </a>
+        </div>
+    </div>
+
+    <!-- Activity Statistics -->
+    <section class="activity-stats row g-4 animate-on-scroll mt-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center p-3 shadow-sm rounded">
+                <div class="stat-icon mb-2"><i class="fas fa-check-circle fa-2x text-success"></i></div>
+                <h4 class="mb-0">{{ activities|selectattr('tipo', 'equalto', 'OFICIAL')|list|length }}</h4>
+                <p class="text-muted small">Oficiales</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center p-3 shadow-sm rounded">
+                <div class="stat-icon mb-2"><i class="fas fa-times-circle fa-2x text-danger"></i></div>
+                <h4 class="mb-0">{{ activities|selectattr('tipo', 'equalto', 'NO_OFICIAL')|list|length }}</h4>
+                <p class="text-muted small">No Oficiales</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center p-3 shadow-sm rounded">
+                <div class="stat-icon mb-2"><i class="fas fa-hourglass-half fa-2x text-warning"></i></div>
+                <h4 class="mb-0">{{ activities|selectattr('estado', 'equalto', 'PENDIENTE')|list|length }}</h4>
+                <p class="text-muted small">Pendientes</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card text-center p-3 shadow-sm rounded">
+                <div class="stat-icon mb-2"><i class="fas fa-check-double fa-2x text-primary"></i></div>
+                <h4 class="mb-0">{{ activities|selectattr('estado', 'equalto', 'COMPLETADA')|list|length }}</h4>
+                <p class="text-muted small">Completadas</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search and Filter -->
+    <section class="search-filter-container mt-4 animate-on-scroll">
+        <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" id="activitySearch" class="form-control" placeholder="Buscar actividades…">
+                </div>
+            </div>
+            <div class="col-12 col-md-6 text-md-end">
+                <div class="btn-group me-2">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="fas fa-filter me-2"></i>Filtrar por Tipo
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item active" href="#" data-type="all">Todos</a></li>
+                        <li><a class="dropdown-item" href="#" data-type="OFICIAL">Oficial</a></li>
+                        <li><a class="dropdown-item" href="#" data-type="NO_OFICIAL">No Oficial</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary" id="sortByTitle" type="button">
+                        <i class="fas fa-sort-alpha-down me-2"></i>Título
+                    </button>
+                    <button class="btn btn-outline-secondary" id="sortByDate" type="button">
+                        <i class="fas fa-sort-numeric-down me-2"></i>Fecha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Activity Table -->
+    <div class="activity-table-container animate-on-scroll mt-4" style="min-width: 600px; overflow-x: auto;">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table activity-table mb-0" id="activityTable" style="min-width: 700px;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Título</th>
+                                <th>Tipo</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if activities %}
+                            {% for activity in activities %}
+                            <tr class="activity-row" data-type="{{ activity.tipo.name }}">
+                                <td>{{ loop.index }}</td>
+                                <td>{{ activity.titulo }}</td>
+                                <td>
+                                    <span
+                                        class="type-badge {% if activity.tipo.name=='OFICIAL' %}type-official{% elif activity.tipo.name=='NO_OFICIAL' %}type-unofficial{% endif %}">
+                                        {{ activity.tipo.value }}
+                                    </span>
+                                </td>
+                                <td>{{ activity.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <span
+                                        class="status-badge {% if activity.estado=='ACTIVA' %}status-active{% else %}status-inactive{% endif %}">
+                                        <i class="fas fa-circle me-1"></i>{{ activity.estado|capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons d-flex gap-1">
+                                        <a href="{{ url_for('student.edit_activity', actividad_id=activity.id) }}"
+                                            class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip"
+                                            title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('student.detail_activity', actividad_id=activity.id) }}"
+                                            class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Ver">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
+                                        {% if activity.estado == 'ENVIADA' %}
+                                        <button class="btn btn-sm btn-success" disabled data-bs-toggle="tooltip"
+                                            title="Actividad ya enviada">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        {% else %}
+                                        <form method="POST"
+                                            action="{{ url_for('student.submit_activity', actividad_id=activity.id) }}"
+                                            style="display:inline;">
+                                           {{ form_envio.hidden_tag() }}
+                                            <button type="submit" class="btn btn-sm btn-outline-success"
+                                                data-bs-toggle="tooltip" title="Enviar">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-activity-btn"
+                                            data-activity-id="{{ activity.id }}"
+                                            data-activity-title="{{ activity.titulo }}" data-bs-toggle="tooltip"
+                                            title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="fas fa-info-circle me-2"></i>No hay actividades registradas.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Pagination -->
+    <div class="pagination-container animate-on-scroll mt-4">
+        <nav aria-label="Paginación de actividades">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1"><i
+                            class="fas fa-chevron-left"></i></a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Delete Activity Modal -->
+<div class="modal fade" id="deleteActivityModal" tabindex="-1" aria-labelledby="deleteActivityModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteActivityModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <p>¿Seguro que deseas eliminar la actividad <strong id="deleteActivityTitle"></strong>?</p>
+                <p class="text-danger">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteActivityForm" method="POST" action="">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // tooltips
+        [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].forEach(el => new bootstrap.Tooltip(el));
+
+        // delete modal
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteActivityModal'));
+        document.querySelectorAll('.delete-activity-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.activityId;
+                const title = btn.dataset.activityTitle;
+                document.getElementById('deleteActivityTitle').textContent = title;
+                document.getElementById('deleteActivityForm').action =
+                    "{{ url_for('student.delete_activity', actividad_id=0) }}".replace('0', id);
+                deleteModal.show();
+            });
+        });
+
+        // search
+        const searchInput = document.getElementById('activitySearch');
+        const rows = document.querySelectorAll('#activityTable tbody tr');
+        searchInput.addEventListener('input', () => {
+            const term = searchInput.value.toLowerCase();
+            rows.forEach(row => {
+                const title = row.cells[1].textContent.toLowerCase();
+                const type = row.dataset.type.toLowerCase();
+                const status = row.cells[4].textContent.toLowerCase();
+                row.style.display = (title.includes(term) || type.includes(term) || status.includes(term)) ? '' : 'none';
+            });
+        });
+
+        // sorting by title/date similar to above
+    });
+</script>
+{% endblock %}

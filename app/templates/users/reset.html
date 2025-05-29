@@ -1,0 +1,452 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/reset-details.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'components/navbar-dash.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="page-header animate-on-scroll">
+        <div class="header-content">
+            <h2><i class="fas fa-key me-3"></i>Restablecer Contraseña</h2>
+            <p class="text-muted">Establezca una nueva contraseña para el usuario <span class="fw-bold">{{ user.usuario
+                    }}</span></p>
+        </div>
+        <div class="header-actions mb-4">
+            <a href="{{ url_for('admin.list_users') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+            </a>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card-container animate-on-scroll">
+        <div class="card form-card">
+            <div class="card-body">
+                <div class="user-info-header mb-4">
+                    <div class="user-avatar">
+                        <span>{{ user.usuario[0].upper() }}</span>
+                    </div>
+                    <div class="user-details">
+                        <h4>{{ user.nombre_completo }}</h4>
+                        <p class="text-muted mb-0">{{ user.correo }}</p>
+                        <span class="role-badge 
+                           {% if user.rol.value == 'administrador' %}role-admin
+                            {% elif user.rol.value == 'profesor' %}role-teacher
+                            {% elif user.rol.value == 'jefe_departamento' %}role-head
+                            {% else %}role-student{% endif %}">
+                            {% if user.rol.value == 'administrador' %}Administrador
+                            {% elif user.rol.value == 'profesor' %}Profesor
+                            {% elif user.rol.value == 'jefe_departamento' %}Jefe de Departamento
+                            {% else %}Estudiante{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <form method="POST" id="resetPasswordForm"
+                    action="{{ url_for('admin.reset_password', user_id=user.id) }}">
+
+                    {{ form.hidden_tag() }}
+
+                    <div class="alert alert-warning">
+                        <div class="d-flex">
+                            <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Importante</h6>
+                                <p class="mb-0">Al restablecer la contraseña, el usuario deberá iniciar sesión con la
+                                    nueva contraseña la próxima vez que acceda al sistema.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            {{ form.nueva_clave(class="form-control", id="password", placeholder="Nueva contraseña") }}
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.nueva_clave.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.nueva_clave.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="password-strength mb-4">
+                        <div class="strength-meter">
+                            <div class="strength-meter-fill" data-strength="0"></div>
+                        </div>
+                        <div class="strength-text">Fuerza de la contraseña: <span>Débil</span></div>
+                        <div class="password-requirements">
+                            <p class="requirement" data-requirement="length"><i class="fas fa-times-circle"></i> Al
+                                menos 6 caracteres</p>
+                            <p class="requirement" data-requirement="uppercase"><i class="fas fa-times-circle"></i> Al
+                                menos una mayúscula</p>
+                            <p class="requirement" data-requirement="lowercase"><i class="fas fa-times-circle"></i> Al
+                                menos una minúscula</p>
+                            <p class="requirement" data-requirement="number"><i class="fas fa-times-circle"></i> Al
+                                menos un número</p>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirmar
+                            contraseña") }}
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.confirm_password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div id="password-match-feedback" class="form-text"></div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        {{ form.require_change(class="form-check-input", id="require_change") }}
+                        <label class="form-check-label" for="require_change">
+                            Requerir cambio de contraseña en el próximo inicio de sesión
+                        </label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-success btn-lg") }}
+                        <a href="{{ url_for('admin.list_users') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Tips -->
+    <div class="security-tips animate-on-scroll mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Consejos de Seguridad</h5>
+            </div>
+            <div class="card-body">
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-random"></i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Use contraseñas únicas</h6>
+                            <p>No reutilice contraseñas en diferentes sitios o servicios.</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-dice"></i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Evite información personal</h6>
+                            <p>No use nombres, fechas de nacimiento u otra información personal fácil de adivinar.</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Cambie contraseñas regularmente</h6>
+                            <p>Actualice las contraseñas cada 3-6 meses para mayor seguridad.</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Use un gestor de contraseñas</h6>
+                            <p>Considere usar un gestor de contraseñas para almacenar y generar contraseñas seguras.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="jsMessageModal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%);
+    background:#333; color:#fff; padding:1rem 2rem; border-radius:8px; z-index:1050; font-size:1.2rem;">
+    <span id="jsMessageText"></span>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Password visibility toggle
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const input = this.previousElementSibling;
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+
+                // Toggle eye icon
+                const eyeIcon = this.querySelector('i');
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        });
+
+        // Password strength meter
+        const passwordInput = document.querySelector('#password');
+        const strengthMeter = document.querySelector('.strength-meter-fill');
+        const strengthText = document.querySelector('.strength-text span');
+        const requirements = {
+            length: document.querySelector('.requirement[data-requirement="length"]'),
+            uppercase: document.querySelector('.requirement[data-requirement="uppercase"]'),
+            lowercase: document.querySelector('.requirement[data-requirement="lowercase"]'),
+            number: document.querySelector('.requirement[data-requirement="number"]')
+        };
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function () {
+                const password = this.value;
+                let strength = 0;
+
+                // Check length
+                if (password.length >= 6) {
+                    strength += 25;
+                    requirements.length.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.length.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+
+                // Check uppercase
+                if (/[A-Z]/.test(password)) {
+                    strength += 25;
+                    requirements.uppercase.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.uppercase.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+
+                // Check lowercase
+                if (/[a-z]/.test(password)) {
+                    strength += 25;
+                    requirements.lowercase.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.lowercase.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+
+                // Check numbers
+                if (/[0-9]/.test(password)) {
+                    strength += 25;
+                    requirements.number.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.number.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+
+                // Update strength meter
+                strengthMeter.style.width = `${strength}%`;
+                strengthMeter.setAttribute('data-strength', Math.ceil(strength / 25));
+
+                // Update strength text
+                if (strength <= 25) {
+                    strengthText.textContent = 'Débil';
+                    strengthText.className = 'text-danger';
+                } else if (strength <= 50) {
+                    strengthText.textContent = 'Moderada';
+                    strengthText.className = 'text-warning';
+                } else if (strength <= 75) {
+                    strengthText.textContent = 'Buena';
+                    strengthText.className = 'text-info';
+                } else {
+                    strengthText.textContent = 'Fuerte';
+                    strengthText.className = 'text-success';
+                }
+
+                // Check password match
+                checkPasswordMatch();
+            });
+        }
+
+        // Password match validation
+        const confirmPasswordInput = document.querySelector('#confirm_password');
+        const passwordMatchFeedback = document.querySelector('#password-match-feedback');
+
+        function checkPasswordMatch() {
+            if (passwordInput.value && confirmPasswordInput.value) {
+                if (passwordInput.value === confirmPasswordInput.value) {
+                    confirmPasswordInput.classList.remove('is-invalid');
+                    confirmPasswordInput.classList.add('is-valid');
+                    passwordMatchFeedback.textContent = 'Las contraseñas coinciden';
+                    passwordMatchFeedback.className = 'form-text text-success';
+                } else {
+                    confirmPasswordInput.classList.remove('is-valid');
+                    confirmPasswordInput.classList.add('is-invalid');
+                    passwordMatchFeedback.textContent = 'Las contraseñas no coinciden';
+                    passwordMatchFeedback.className = 'form-text text-danger';
+                }
+            } else {
+                passwordMatchFeedback.textContent = '';
+                confirmPasswordInput.classList.remove('is-valid', 'is-invalid');
+            }
+        }
+
+        if (confirmPasswordInput) {
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        }
+
+        // Form validation
+        const resetPasswordForm = document.querySelector('#resetPasswordForm');
+        if (!resetPasswordForm) return;
+
+       
+        // Función para mostrar mensajes en modal simple
+        function showMessage(type, text) {
+            const modal = document.getElementById('jsMessageModal');
+            const textSpan = document.getElementById('jsMessageText');
+            if (!modal || !textSpan) return;
+
+            // Cambiar estilo según tipo
+            modal.style.backgroundColor = (type === 'success') ? 'rgba(40, 167, 69, 0.9)' :
+                (type === 'danger') ? 'rgba(220, 53, 69, 0.9)' :
+                    'rgba(0,0,0,0.8)';
+
+            textSpan.textContent = text;
+            modal.style.display = 'block';
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 2000);
+        }
+
+        function showError(input, message) {
+            const formGroup = input.closest('.form-floating, .input-group');
+            if (!formGroup) return;
+
+            let errorDiv = formGroup.querySelector('.invalid-feedback');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback d-block';
+                formGroup.appendChild(errorDiv);
+            }
+            errorDiv.innerHTML = `<span>${message}</span>`;
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+        }
+
+        function clearError(input) {
+            const formGroup = input.closest('.form-floating, .input-group');
+            if (!formGroup) return;
+
+            const errorDiv = formGroup.querySelector('.invalid-feedback');
+            if (errorDiv) errorDiv.remove();
+
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+
+        // Validación previa al envío
+        function validateForm() {
+            let isValid = true;
+
+            // Validar contraseña
+            if (!passwordInput.value) {
+                showError(passwordInput, 'La contraseña es obligatoria');
+                isValid = false;
+            } else if (passwordInput.value.length < 6) {
+                showError(passwordInput, 'La contraseña debe tener al menos 6 caracteres');
+                isValid = false;
+            } else {
+                clearError(passwordInput);
+            }
+
+            // Validar confirmación
+            if (!confirmPasswordInput.value) {
+                showError(confirmPasswordInput, 'Debe confirmar la contraseña');
+                isValid = false;
+            } else if (passwordInput.value !== confirmPasswordInput.value) {
+                showError(confirmPasswordInput, 'Las contraseñas no coinciden');
+                isValid = false;
+            } else {
+                clearError(confirmPasswordInput);
+            }
+
+            return isValid;
+        }
+
+        // Listener único para validar y enviar por fetch
+        resetPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!validateForm()) {
+                showMessage('danger', 'Por favor, corrige los errores antes de enviar.');
+                return;
+            }
+
+            const formData = new FormData(resetPasswordForm);
+
+            try {
+                const response = await fetch(resetPasswordForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showMessage('success', data.message || 'Contraseña restablecida con éxito.');
+
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url || '/admin/list_users';
+                    }, 1500);
+                } else {
+                    // Mostrar errores de validación recibidos del backend
+                    if (data.errors) {
+                        Object.entries(data.errors).forEach(([field, messages]) => {
+                            const input = resetPasswordForm.querySelector(`[name=${field}]`);
+                            if (input) {
+                                showError(input, messages.join('<br>'));
+                            }
+                        });
+                    }
+                    showMessage('danger', data.message || 'Error al restablecer la contraseña.');
+                }
+            } catch (error) {
+                showMessage('danger', 'Error de red o servidor. Intente nuevamente.');
+                console.error('Fetch error:', error);
+            }
+        });
+
+        // Animate elements on scroll
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
+{% endblock %}

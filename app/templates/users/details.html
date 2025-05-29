@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/reset-details.css') }}">
+{% endblock %}
+
+{% block navbar %}
+    {% include 'components/navbar-dash.html' %}
+{% endblock  %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="page-header animate-on-scroll">
+        <div class="header-content">
+            <h2><i class="fas fa-user me-3"></i>Detalles del Usuario</h2>
+            <p class="text-muted">Información completa del usuario <span class="fw-bold">{{ user.usuario }}</span></p>
+        </div>
+        <div class="header-actions mb-3">
+            <a href="{{ url_for('admin.list_users') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+            </a>
+        </div>
+    </div>
+
+    <!-- User Profile Card -->
+    <div class="user-profile-container animate-on-scroll">
+        <div class="card profile-card">
+            <div class="card-body">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <span>{{ user.usuario[0].upper() }}</span>
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ user.nombre_completo }}</h3>
+                        <p class="text-muted mb-2">{{ user.correo }}</p>
+                        <span class="role-badge 
+                            {% if user.rol.value == 'administrador' %}role-admin
+                            {% elif user.rol.value == 'profesor' %}role-teacher
+                            {% elif user.rol.value == 'jefe_departamento' %}role-head
+                            {% else %}role-student{% endif %}">
+                            {% if user.rol.value == 'administrador' %}Administrador
+                            {% elif user.rol.value == 'profesor' %}Profesor
+                            {% elif user.rol.value == 'jefe_departamento' %}Jefe de Departamento
+                            {% else %}Estudiante{% endif %}
+                        </span>
+                        <span class="status-badge status-active ms-2">
+                            <i class="fas fa-circle me-1"></i>Activo
+                        </span>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                    <a href="{{ url_for('admin.reset_password', user_id=user.id) }}" class="btn btn-outline-warning">
+                        <i class="fas fa-key me-2"></i>Restablecer Contraseña
+                    </a>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">
+                        <i class="fas fa-trash-alt me-2"></i>Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Tabs -->
+    <div class="user-details-tabs animate-on-scroll">
+        <div class="card">
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="userDetailsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+                            <i class="fas fa-info-circle me-2"></i>Información
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false">
+                            <i class="fas fa-history me-2"></i>Actividad
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions" type="button" role="tab" aria-controls="permissions" aria-selected="false">
+                            <i class="fas fa-lock me-2"></i>Permisos
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content p-3" id="userDetailsTabsContent">
+                    <!-- Information Tab -->
+                    <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-section">
+                                    <h5 class="section-title">Información Personal</h5>
+                                    <div class="info-item">
+                                        <div class="info-label">Nombre Completo</div>
+                                        <div class="info-value">{{ user.nombre_completo }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Correo Electrónico</div>
+                                        <div class="info-value">{{ user.correo }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Nombre de Usuario</div>
+                                        <div class="info-value">{{ user.usuario }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-section">
+                                    <h5 class="section-title">Información de la Cuenta</h5>
+                                    <div class="info-item">
+                                        <div class="info-label">ID de Usuario</div>
+                                        <div class="info-value">{{ user.id }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Rol</div>
+                                        <div class="info-value">
+                                            <span class="role-badge 
+                                                {% if user.rol.value == 'administrador' %}role-admin
+                                                {% elif user.rol.value == 'profesor' %}role-teacher
+                                                {% elif user.rol.value == 'jefe_departamento' %}role-head
+                                                {% else %}role-student{% endif %}">
+                                                {% if user.rol.value == 'administrador' %}Administrador
+                                                {% elif user.rol.value == 'profesor' %}Profesor
+                                                {% elif user.rol.value == 'jefe_departamento' %}Jefe de Departamento
+                                                {% else %}Estudiante{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Estado</div>
+                                        <div class="info-value">
+                                            <span class="status-badge status-active">
+                                                <i class="fas fa-circle me-1"></i>Activo
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Fecha de Creación</div>
+                                        <div class="info-value">{{ user.created_at|default('No disponible', true) }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Última Actualización</div>
+                                        <div class="info-value">{{ user.updated_at|default('No disponible', true) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Tab -->
+                    <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+                        <div class="activity-timeline">
+                            {% if user_activity %}
+                                {% for activity in user_activity %}
+                                <div class="timeline-item">
+                                    <div class="timeline-marker">
+                                        <i class="{{ activity.icon }}"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">{{ activity.date }}</div>
+                                        <h6 class="mb-0">{{ activity.title }}</h6>
+                                        <p class="text-muted mb-0">{{ activity.description }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-history"></i>
+                                    </div>
+                                    <h5>No hay actividad registrada</h5>
+                                    <p class="text-muted">No se ha registrado actividad para este usuario.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Permissions Tab -->
+                    <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+                        <div class="permissions-container">
+                            <div class="permission-group">
+                                <h5 class="permission-group-title">Permisos del Sistema</h5>
+                                <div class="permission-items">
+                                    <div class="permission-item">
+                                        <div class="permission-name">Acceso al Panel de Administración</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value == 'administrador' %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <div class="permission-name">Gestión de Usuarios</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value == 'administrador' %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <div class="permission-name">Gestión de Cursos</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value in ['administrador', 'profesor', 'jefe_departamento'] %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <div class="permission-name">Gestión de Actividades</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value in ['administrador', 'profesor', 'jefe_departamento'] %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <div class="permission-name">Acceso a Reportes</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value in ['administrador', 'profesor', 'jefe_departamento'] %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-group">
+                                <h5 class="permission-group-title">Permisos de Contenido</h5>
+                                <div class="permission-items">
+                                    <div class="permission-item">
+                                        <div class="permission-name">Crear Contenido</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value in ['administrador', 'profesor', 'jefe_departamento'] %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <div class="permission-name">Editar Contenido</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value in ['administrador', 'profesor', 'jefe_departamento'] %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <div class="permission-name">Eliminar Contenido</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value in ['administrador', 'profesor', 'jefe_departamento'] %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <div class="permission-name">Publicar Contenido</div>
+                                        <div class="permission-status">
+                                            {% if user.rol.value in ['administrador', 'profesor', 'jefe_departamento'] %}
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Permitido</span>
+                                            {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Denegado</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-user-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p class="delete-user-message">
+                    ¿Estás seguro de que deseas eliminar al usuario <span class="fw-bold">{{ user.username }}</span>?
+                </p>
+                <p class="text-danger">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Animate elements on scroll
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
+{% endblock %}

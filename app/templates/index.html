@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'components/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container my-5">
+
+    <!-- Hero Section -->
+    <header class="hero-section text-white text-center py-5 fade-in">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mx-auto">
+                    <h1 class="display-4 fw-bold mb-4">Actividades Escolares</h1>
+                    <p class="lead mb-4">
+                        Gestiona y organiza todas tus actividades escolares de manera eficiente con nuestra plataforma
+                        educativa integral.
+                    </p>
+                    {% if not logged %}
+                    <a class="btn btn-light btn-lg px-5 py-3 shadow-sm" href="{{ url_for('auth.login') }}">
+                        <i class="fas fa-sign-in-alt me-2"></i> Acceder
+                    </a>
+                    {% else %}
+                    <a class="btn btn-light btn-lg px-5 py-3 shadow-sm"
+                        href="{{ url_for('dashboard.view_dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i> Ir al Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="wave-bottom">
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="features-section py-5">
+        <div class="container py-4">
+            <h2 class="text-center mb-5 animate-on-scroll">Características Principales</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3>Organización</h3>
+                        <p>Organiza tus actividades escolares de manera eficiente y sin complicaciones con nuestro
+                            sistema intuitivo.</p>
+                        <a href="#" class="feature-link">Saber más <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card animate-on-scroll" style="animation-delay: 0.2s;">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Colaboración</h3>
+                        <p>Colabora con tus compañeros y comparte tus actividades fácilmente para mejorar el trabajo en
+                            equipo.</p>
+                        <a href="#" class="feature-link">Saber más <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card animate-on-scroll" style="animation-delay: 0.4s;">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>Comentarios</h3>
+                        <p>Recibe y deja comentarios en las actividades para mejorar la comunicación entre estudiantes y
+                            profesores.</p>
+                        <a href="#" class="feature-link">Saber más <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section bg-light">
+        <div class="container py-4">
+            <div class="row text-center">
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item animate-on-scroll">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Usuarios</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item animate-on-scroll" style="animation-delay: 0.1s;">
+                        <div class="stat-number">1,200+</div>
+                        <div class="stat-label">Actividades</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item animate-on-scroll" style="animation-delay: 0.2s;">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Satisfacción</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-item animate-on-scroll" style="animation-delay: 0.3s;">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Soporte</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Activities Table Section -->
+    <!-- Activities Table Section -->
+    <section class="activities-section">
+        <div class="container py-4">
+            {% if activities.items %}
+            <div class="section-header text-center mb-5 animate-on-scroll">
+                <h2>Lista de Actividades Oficiales</h2>
+                <p>Explora las actividades ya enviadas y aprobadas por el departamento</p>
+            </div>
+
+            <div class="card shadow-sm animate-on-scroll">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table custom-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <!-- <th>Tipo</th> -->
+                                    <th>Fecha</th>
+                                    <!-- <th>Estado</th> -->
+                                    <th>Registrado por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in activities.items %}
+                                <tr class="activity-row">
+                                    <td>{{ activity.titulo }}</td>
+                                    <!-- <td><span class="badge bg-primary">{{ activity.tipo.value }}</span></td> -->
+                                    <td>
+                                        <i class="far fa-calendar-alt me-2"></i>
+                                        {{ activity.fecha.strftime('%d/%m/%Y %H:%M') }}
+                                    </td>
+                                    <!-- <td><span class="badge bg-light text-dark">{{ activity.estado }}</span></td> -->
+                                    <td><i class="fas fa-user me-1"></i> {{ activity.creador.usuario }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if activities.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for(request.endpoint, page=activities.prev_num) }}">&laquo;</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                    {% endif %}
+
+                    {% for p in activities.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if p %}
+                    {% if p == activities.page %}
+                    <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=p) }}">{{ p }}</a>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if activities.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for(request.endpoint, page=activities.next_num) }}">&raquo;</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            {% else %}
+            <div class="empty-state text-center py-5 animate-on-scroll">
+                <div class="empty-state-icon mb-4">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h2>No hay actividades oficiales</h2>
+                <p class="mb-4">Sé el primero en crear una actividad en nuestra plataforma</p>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('student.create_activity') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i> Crear Actividad
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión para Crear
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+
+    <!-- CTA Section
+<section class="cta-section text-white text-center py-5">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="mb-4">¿Listo para empezar?</h2>
+                <p class="lead mb-5">Únete a nuestra plataforma educativa y comienza a gestionar tus actividades escolares de manera eficiente.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    {% if not logged %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-lg px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-user-plus me-2"></i> Registrarse
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('dashboard.view_dashboard') }}" class="btn btn-light btn-lg px-4">
+                        <i class="fas fa-tachometer-alt me-2"></i> Ir al Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h5>Plataforma Educativa</h5>
+                <p>Transformando la educación con tecnología innovadora y experiencias de
+                    aprendizaje personalizadas.</p>
+                <div class="social-icons mt-3">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h5>Enlaces</h5>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Cursos</a></li>
+                    <li><a href="#">Instructores</a></li>
+                    <li><a href="#">Eventos</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h5>Soporte</h5>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Ayuda</a></li>
+                    <li><a href="#">Términos</a></li>
+                    <li><a href="#">Privacidad</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5>Suscríbete</h5>
+                <p class="">Recibe noticias y actualizaciones sobre nuevos cursos.</p>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Tu email" aria-label="Tu email">
+                    <button class="btn btn-primary" type="button">Suscribir</button>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-4 mb-4" style="background-color: rgba(255,255,255,0.1);">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="mb-0 ">&copy; 2024 Plataforma Educativa. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}

@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/form.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'components/navbar-dash.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="page-header animate-on-scroll">
+        <div class="header-content">
+            <h2><i class="fas fa-user-edit me-3"></i>Editar Usuario</h2>
+            <p class="text-muted">Modifique la información del usuario <span class="fw-bold">{{ user.usuario }}</span>
+            </p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('admin.list_users') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+            </a>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card-container animate-on-scroll">
+        <div class="card form-card">
+            <div class="card-body">
+                <div class="form-progress">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="step-label">Información Personal</div>
+                    </div>
+                    <div class="progress-connector"></div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="step-label">Credenciales</div>
+                    </div>
+                    <div class="progress-connector"></div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-icon">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <div class="step-label">Rol y Permisos</div>
+                    </div>
+                </div>
+
+                <form method="POST" id="editUserForm" class="multi-step-form">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step active" data-step="1">
+                        <h4 class="step-title">Información Personal</h4>
+                        <p class="step-description">Actualice la información personal del usuario</p>
+
+                        <div class="form-floating mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.nombre_completo(class="form-control", id="nombre_completo", placeholder="Nombre
+                                completo", value=user.nombre_completo) }}
+                            </div>
+                            {% if form.nombre_completo.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.nombre_completo.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Ingrese el nombre completo del usuario.</div>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                {{ form.correo(class="form-control", id="correo", placeholder="Correo electrónico",
+                                value=user.correo) }}
+                            </div>
+                            {% if form.correo.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.correo.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Ingrese un correo electrónico válido.</div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-primary next-step">
+                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Credentials -->
+                    <div class="form-step" data-step="2">
+                        <h4 class="step-title">Credenciales de Acceso</h4>
+                        <p class="step-description">Actualice el nombre de usuario (la contraseña se puede cambiar en
+                            otra sección)</p>
+
+                        <div class="form-floating mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
+                                {{ form.usuario(class="form-control", id="usuario", placeholder="Usuario",
+                                value=user.usuario) }}
+                            </div>
+                            {% if form.usuario.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.usuario.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">El nombre de usuario debe tener al menos 4 caracteres.</div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-3 fs-4"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-1">Cambio de Contraseña</h6>
+                                    <p class="mb-0">Para cambiar la contraseña del usuario, utilice la opción
+                                        "Restablecer Contraseña" en la lista de usuarios.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-secondary prev-step">
+                                <i class="fas fa-arrow-left me-2"></i> Anterior
+                            </button>
+                            <button type="button" class="btn btn-primary next-step">
+                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Role and Permissions -->
+                    <div class="form-step" data-step="3">
+                        <h4 class="step-title">Rol y Permisos</h4>
+                        <p class="step-description">Actualice el rol del usuario en el sistema</p>
+
+                        <div class="role-selection mb-4 d-flex flex-column flex-md-row gap-5">
+                            <div class="role-card {% if user.rol.value == 'administrador' %}active{% endif %}"
+                                data-role="administrador">
+                                <div class="role-icon admin-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div class="role-info">
+                                    <h5>Administrador</h5>
+                                    <p>Control total del sistema</p>
+                                </div>
+                                <div class="role-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="role-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="role-card {% if user.rol.value == 'jefe_departamento' %}active{% endif %}"
+                                data-role="jefe_departamento">
+                                <div class="role-icon head-icon">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <div class="role-info">
+                                    <h5>Jefe de Departamento</h5>
+                                    <p>Gestión departamental</p>
+                                </div>
+                                <div class="role-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="role-card {% if user.rol.value == 'estudiante' %}active{% endif %}"
+                                data-role="estudiante">
+                                <div class="role-icon student-icon">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div class="role-info">
+                                    <h5>Estudiante</h5>
+                                    <p>Acceso a cursos y actividades</p>
+                                </div>
+                                <div class="role-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="role-card {% if user.rol.value == 'profesor' %}active{% endif %}"
+                                data-role="profesor">
+                                <div class="role-icon professor-icon">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+
+                                <div class="role-info">
+                                    <h5>Profesor</h5>
+                                    <p>Gestiona cursos y actividades; aprueba o rechaza solicitudes.</p>
+                                </div>
+                                <div class="role-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-secondary prev-step">
+                                <i class="fas fa-arrow-left me-2"></i> Anterior
+                            </button>
+                        </div>
+
+                        {{ form.rol(class="d-none", id="rol", value=user.rol.value) }}
+                        {% if form.rol.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.rol.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-navigation d-flex justify-content-end">
+                        {{ form.submit(class="btn btn-success", value="Guardar Cambios") }}
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Multi-step form navigation
+        const formSteps = document.querySelectorAll('.form-step');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const nextButtons = document.querySelectorAll('.next-step');
+        const prevButtons = document.querySelectorAll('.prev-step');
+
+        nextButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const currentStep = parseInt(this.closest('.form-step').getAttribute('data-step'));
+                const nextStep = currentStep + 1;
+
+                // Validate current step before proceeding
+                if (validateStep(currentStep)) {
+                    // Hide current step
+                    document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+                    // Show next step
+                    document.querySelector(`.form-step[data-step="${nextStep}"]`).classList.add('active');
+
+                    // Update progress indicator
+                    document.querySelector(`.progress-step[data-step="${currentStep}"]`).classList.add('completed');
+                    document.querySelector(`.progress-step[data-step="${nextStep}"]`).classList.add('active');
+                }
+            });
+        });
+
+        prevButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const currentStep = parseInt(this.closest('.form-step').getAttribute('data-step'));
+                const prevStep = currentStep - 1;
+
+                // Hide current step
+                document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+                // Show previous step
+                document.querySelector(`.form-step[data-step="${prevStep}"]`).classList.add('active');
+
+                // Update progress indicator
+                document.querySelector(`.progress-step[data-step="${currentStep}"]`).classList.remove('active');
+                document.querySelector(`.progress-step[data-step="${prevStep}"]`).classList.add('active');
+            });
+        });
+
+        // Role selection
+        const roleCards = document.querySelectorAll('.role-card');
+        const roleSelect = document.querySelector('#rol');
+
+        roleCards.forEach(card => {
+            card.addEventListener('click', function () {
+                // Remove active class from all cards
+                roleCards.forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked card
+                this.classList.add('active');
+
+                // Update hidden select value
+                const role = this.getAttribute('data-role');
+                roleSelect.value = role;
+            });
+        });
+
+        // Form validation
+        function validateStep(step) {
+            let isValid = true;
+
+            if (step === 1) {
+                const nombreCompleto = document.querySelector('#nombre_completo');
+                const correo = document.querySelector('#correo');
+
+                if (!nombreCompleto.value.trim()) {
+                    showError(nombreCompleto, 'El nombre completo es obligatorio');
+                    isValid = false;
+                } else {
+                    clearError(nombreCompleto);
+                }
+
+                if (!correo.value.trim()) {
+                    showError(correo, 'El correo electrónico es obligatorio');
+                    isValid = false;
+                } else if (!isValidEmail(correo.value)) {
+                    showError(correo, 'Ingrese un correo electrónico válido');
+                    isValid = false;
+                } else {
+                    clearError(correo);
+                }
+            } else if (step === 2) {
+                const usuario = document.querySelector('#usuario');
+
+                if (!usuario.value.trim()) {
+                    showError(usuario, 'El nombre de usuario es obligatorio');
+                    isValid = false;
+                } else if (usuario.value.length < 4) {
+                    showError(usuario, 'El nombre de usuario debe tener al menos 4 caracteres');
+                    isValid = false;
+                } else {
+                    clearError(usuario);
+                }
+            }
+
+            return isValid;
+        }
+
+        function showError(input, message) {
+            const formGroup = input.closest('.form-floating');
+            const errorDiv = formGroup.querySelector('.invalid-feedback') || document.createElement('div');
+
+            if (!formGroup.querySelector('.invalid-feedback')) {
+                errorDiv.className = 'invalid-feedback d-block';
+                errorDiv.innerHTML = `<span>${message}</span>`;
+                formGroup.appendChild(errorDiv);
+            } else {
+                errorDiv.innerHTML = `<span>${message}</span>`;
+            }
+
+            input.classList.add('is-invalid');
+        }
+
+        function clearError(input) {
+            const formGroup = input.closest('.form-floating');
+            const errorDiv = formGroup.querySelector('.invalid-feedback');
+
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Form submission validation
+        const editUserForm = document.querySelector('#editUserForm');
+        if (editUserForm) {
+            editUserForm.addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevenir envío tradicional
+
+                // Validación de pasos (como ya tienes)
+                let isValid = true;
+                for (let i = 1; i <= 3; i++) {
+                    if (!validateStep(i)) {
+                        isValid = false;
+                        // Mostrar el paso con error (como ya tienes)
+                        formSteps.forEach(step => step.classList.remove('active'));
+                        progressSteps.forEach(step => step.classList.remove('active'));
+                        document.querySelector(`.form-step[data-step="${i}"]`).classList.add('active');
+                        document.querySelector(`.progress-step[data-step="${i}"]`).classList.add('active');
+                        break;
+                    }
+                }
+                const roleSelect = document.querySelector('#rol');
+                if (!roleSelect.value) {
+                    isValid = false;
+                    alert('Por favor, seleccione un rol para el usuario.');
+                    formSteps.forEach(step => step.classList.remove('active'));
+                    progressSteps.forEach(step => step.classList.remove('active'));
+                    document.querySelector(`.form-step[data-step="3"]`).classList.add('active');
+                    document.querySelector(`.progress-step[data-step="3"]`).classList.add('active');
+                }
+                if (!isValid) return;
+
+                // Recoge los datos del formulario
+                const formData = new FormData(editUserForm);
+
+                // Envía con fetch
+                try {
+                    const response = await fetch(editUserForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest' // Opcional, para distinguir peticiones AJAX
+                        }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Redirige o muestra mensaje de éxito
+                        window.location.href = data.redirect_url;
+                    } else {
+                        // Muestra errores
+                        alert(data.message || 'Ocurrió un error al actualizar el usuario.');
+                    }
+                } catch (error) {
+                    alert('Error de red: ' + error);
+                }
+            });
+        }
+
+        // Animate elements on scroll
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
+{% endblock %}

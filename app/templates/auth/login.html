@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock  %}
+
+{% block content %}
+<div class="login-container">
+    <div class="row g-0">
+        <!-- Login Form Side -->
+        <div class="col-lg-6 login-form-container">
+            <div class="login-form-wrapper">
+                <div class="text-center mb-4">
+                    <div class="brand-logo mb-4">
+                        <div class="logo-circle">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold">¡Bienvenido de nuevo!</h2>
+                    <p class="text-muted">Ingresa tus credenciales para acceder a tu cuenta</p>
+                </div>
+                
+                <div class="card login-card">
+                    <div class="card-body p-4">
+                        <form method="POST" class="login-form">
+                            {{ form.hidden_tag() }}
+                            <!-- Crear ruta main.index con icono de flecha para regresar -->
+                            <div class="text-start mb-3">
+                                <a href="{{ url_for('main.index') }}" class="btn btn-link text-decoration-none p-0">
+                                    <i class="fas fa-arrow-left"></i> Volver al inicio
+                                </a>
+                            </div>
+                            <div class="form-group mb-4">
+                                <label for="username" class="form-label">Usuario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </span>
+                                    {{ form.usuario(class="form-control border-start-0", placeholder="Ingrese su usuario") }}
+                                </div>
+                                {% if form.usuario.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.usuario.errors %}
+                                    <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="password" class="form-label">Contraseña</label>
+                                    <a href="#" class="text-decoration-none small forgot-password">¿Olvidaste tu contraseña?</a>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-lock text-muted"></i>
+                                    </span>
+                                    {{ form.clave(class="form-control border-start-0", placeholder="Ingrese su contraseña") }}
+                                    <button class="btn btn-outline-secondary border-start-0 toggle-password" type="button">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                {% if form.clave.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.clave.errors %}
+                                    <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Recordar mi sesión
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-3 mb-4">
+                                <i class="fas fa-sign-in-alt me-2"></i> Iniciar sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-muted small">© 2024 Plataforma Educativa. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Image Side -->
+        <div class="col-lg-6 d-none d-lg-block login-image-container">
+            <div class="login-image-content">
+                <h2 class="text-white mb-4">Plataforma Educativa</h2>
+                <p class="text-white-50 mb-4">Gestiona y organiza todas tus actividades escolares de manera eficiente con nuestra plataforma integral.</p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h5 class="text-white">Organización</h5>
+                            <p class="text-white-50">Organiza tus actividades escolares eficientemente</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h5 class="text-white">Colaboración</h5>
+                            <p class="text-white-50">Colabora con tus compañeros fácilmente</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h5 class="text-white">Comentarios</h5>
+                            <p class="text-white-50">Mejora la comunicación con comentarios</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock  %}

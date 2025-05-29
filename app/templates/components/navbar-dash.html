@@ -1,0 +1,78 @@
+<!-- Navbar -->
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">Plataforma Educativa</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                {% if current_user.is_authenticated %}
+                <!-- Authenticated User Navigation -->
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.rol.value == 'administrador' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.list_users') }}">
+                            <i class="fas fa-users"></i>
+                            Gestionar Usuarios
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">
+                            <i class="fas fa-home"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Cerrar sesión
+                        </a>
+                    </li>
+                </ul>
+                {% else %}
+                <!-- Non-Authenticated User Navigation -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">
+                            <i class="fas fa-home"></i>
+                            Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">
+                            <i class="fas fa-star"></i>
+                            Características
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#activities">
+                            <i class="fas fa-calendar-check"></i>
+                            Actividades
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">
+                            <i class="fas fa-envelope"></i>
+                            Contacto
+                        </a>
+                    </li>
+                </ul>
+                <div class="auth-buttons d-flex">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-light">
+                        <i class="fas fa-sign-in-alt me-2"></i> Dashboard
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>

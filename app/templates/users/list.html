@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/management.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'components/navbar-dash.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="page-header animate-on-scroll">
+        <div class="header-content">
+            <h2><i class="fas fa-users me-3"></i>Gestión de Usuarios</h2>
+            <p class="text-muted">Administra los usuarios del sistema, sus roles y permisos</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Crear Nuevo Usuario
+            </a>
+        </div>
+    </div>
+
+    <!-- User Statistics -->
+    <div class="user-stats animate-on-scroll">
+        <div class="stat-card">
+            <div class="stat-icon admin-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ users|selectattr('role', 'equalto', 'admin')|list|length }}</h3>
+                <p>Administradores</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon teacher-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ users|selectattr('role', 'equalto', 'teacher')|list|length }}</h3>
+                <p>Profesores</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon head-icon">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ users|selectattr('role', 'equalto', 'jefe_departamento')|list|length }}</h3>
+                <p>Jefes de Departamento</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon student-icon">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ users|selectattr('role', 'equalto', 'student')|list|length }}</h3>
+                <p>Estudiantes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="search-filter-container animate-on-scroll">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="userSearch" placeholder="Buscar usuarios..." class="form-control">
+        </div>
+        <div class="filter-options">
+            <!-- <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="roleFilterDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-2"></i>Filtrar por Rol
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="roleFilterDropdown">
+                    <li><a class="dropdown-item active" href="#" data-role="all">Todos los roles</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#" data-role="admin">Administradores</a></li>
+                    <li><a class="dropdown-item" href="#" data-role="teacher">Profesores</a></li>
+                    <li><a class="dropdown-item" href="#" data-role="jefe_departamento">Jefes de Departamento</a></li>
+                    <li><a class="dropdown-item" href="#" data-role="student">Estudiantes</a></li>
+                </ul>
+            </div> -->
+            <div class="sort-options">
+                <button class="btn btn-outline-secondary" id="sortByUsername">
+                    <i class="fas fa-sort-alpha-down me-2"></i>Nombre
+                </button>
+                <button class="btn btn-outline-secondary" id="sortByRole">
+                    <i class="fas fa-sort me-2"></i>Rol
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Table -->
+    <div class="user-table-container animate-on-scroll">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table user-table mb-0" id="userTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="15%">Avatar</th>
+                                <th width="25%">Nombre de Usuario</th>
+                                <th width="20%">Rol</th>
+                                <th width="15%">Estado</th>
+                                <th width="20%">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set filtered_users = users | rejectattr('id', 'equalto', current_user.id) | list %}
+                            {% if filtered_users %}
+                            {% for user in filtered_users %}
+                            <tr class="user-row" data-role="{{ user.role }}">
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <div class="user-avatar">
+                                        <span>{{ user.usuario[0].upper() }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <h6 class="mb-0">{{ user.usuario }}</h6>
+                                        <small class="text-muted">ID: {{ user.id }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="role-badge 
+                                        {% if user.rol.value == 'Administrador' %}role-admin
+                                        {% elif user.rol.value == 'profesor' %}role-teacher
+                                        {% elif user.rol.value == 'jefe_departamento' %}role-head
+                                        {% else %}role-student{% endif %}">
+                                        {% if user.rol.value == 'administrador' %}Administrador
+                                        {% elif user.rol.value == 'profesor' %}Profesor
+                                        {% elif user.rol.value == 'jefe_departamento' %}Jefe de Departamento
+                                        {% else %}Estudiante{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-active">
+                                        <i class="fas fa-circle me-1"></i>Activo
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}"
+                                            class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip"
+                                            title="Editar Usuario">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.detail_user', user_id=user.id) }}"
+                                            class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip"
+                                            title="Ver Detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.reset_password', user_id=user.id) }}"
+                                            class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip"
+                                            title="Restablecer Contraseña">
+                                            <i class="fas fa-key"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-user-btn"
+                                            data-user-id="{{ user.id }}" data-username="{{ user.username }}"
+                                            data-bs-toggle="tooltip" title="Eliminar Usuario">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="fas fa-info-circle fa-lg me-2"></i> No hay otros usuarios registrados.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Pagination -->
+    <div class="pagination-container animate-on-scroll">
+        <nav aria-label="User pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-user-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p class="delete-user-message">
+                    ¿Estás seguro de que deseas eliminar al usuario <span id="deleteUserName" class="fw-bold"></span>?
+                </p>
+                <p class="text-danger">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteUserForm" action="" method="POST">
+                    <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Delete user modal
+        const deleteUserModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+        const deleteUserBtns = document.querySelectorAll('.delete-user-btn');
+        const deleteUserForm = document.getElementById('deleteUserForm');
+        const deleteUserName = document.getElementById('deleteUserName');
+
+        deleteUserBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const userId = this.getAttribute('data-user-id');
+                const username = this.getAttribute('data-username');
+
+                deleteUserForm.action = "{{ url_for('admin.delete_user', user_id=0) }}".replace('0', userId);
+                deleteUserName.textContent = username;
+                deleteUserModal.show();
+            });
+        });
+
+        // Search functionality
+        const userSearch = document.getElementById('userSearch');
+        const userTable = document.getElementById('userTable');
+        const userRows = userTable.querySelectorAll('tbody tr');
+
+        userSearch.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+
+            userRows.forEach(row => {
+                const username = row.querySelector('.user-info h6').textContent.toLowerCase();
+                const role = row.querySelector('.role-badge').textContent.toLowerCase();
+
+                if (username.includes(searchTerm) || role.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Sorting
+        const sortByUsername = document.getElementById('sortByUsername');
+        const sortByRole = document.getElementById('sortByRole');
+        let usernameSortAsc = true;
+        let roleSortAsc = true;
+
+        sortByUsername.addEventListener('click', function () {
+            const rows = Array.from(userRows);
+
+            rows.sort((a, b) => {
+                const usernameA = a.querySelector('.user-info h6').textContent.toLowerCase();
+                const usernameB = b.querySelector('.user-info h6').textContent.toLowerCase();
+
+                if (usernameSortAsc) {
+                    return usernameA.localeCompare(usernameB);
+                } else {
+                    return usernameB.localeCompare(usernameA);
+                }
+            });
+
+            usernameSortAsc = !usernameSortAsc;
+
+            // Update icon
+            this.querySelector('i').className = usernameSortAsc ?
+                'fas fa-sort-alpha-down me-2' : 'fas fa-sort-alpha-up me-2';
+
+            // Reorder rows
+            const tbody = userTable.querySelector('tbody');
+            rows.forEach(row => tbody.appendChild(row));
+        });
+
+        sortByRole.addEventListener('click', function () {
+            const rows = Array.from(userRows);
+
+            rows.sort((a, b) => {
+                const roleA = a.querySelector('.role-badge').textContent.toLowerCase();
+                const roleB = b.querySelector('.role-badge').textContent.toLowerCase();
+
+                if (roleSortAsc) {
+                    return roleA.localeCompare(roleB);
+                } else {
+                    return roleB.localeCompare(roleA);
+                }
+            });
+
+            roleSortAsc = !roleSortAsc;
+
+            // Update icon
+            this.querySelector('i').className = roleSortAsc ?
+                'fas fa-sort me-2' : 'fas fa-sort me-2';
+
+            // Reorder rows
+            const tbody = userTable.querySelector('tbody');
+            rows.forEach(row => tbody.appendChild(row));
+        });
+
+        // Animate elements on scroll
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
+{% endblock %}

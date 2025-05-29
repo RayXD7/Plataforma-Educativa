@@ -1,0 +1,568 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/form.css') }}">
+{% endblock %}
+
+{% block navbar %}
+    {% include 'components/navbar-dash.html' %}
+{% endblock  %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="page-header animate-on-scroll">
+        <div class="header-content">
+            <h2><i class="fas fa-user-plus me-3"></i>Crear Nuevo Usuario</h2>
+            <p class="text-muted">Complete el formulario para crear un nuevo usuario en el sistema</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('admin.list_users') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+            </a>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card-container animate-on-scroll">
+        <div class="card form-card">
+            <div class="card-body">
+                <div class="form-progress">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="step-label">Información Personal</div>
+                    </div>
+                    <div class="progress-connector"></div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="step-label">Credenciales</div>
+                    </div>
+                    <div class="progress-connector"></div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-icon">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <div class="step-label">Rol y Permisos</div>
+                    </div>
+                </div>
+
+                <form method="POST" id="createUserForm" class="multi-step-form">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step active" data-step="1">
+                        <h4 class="step-title">Información Personal</h4>
+                        <p class="step-description">Ingrese la información personal del nuevo usuario</p>
+
+                        <div class="form-floating mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.nombre_completo(class="form-control", id="nombre_completo", placeholder="Nombre completo") }}
+                            </div>
+                            {% if form.nombre_completo.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.nombre_completo.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Ingrese el nombre completo del usuario.</div>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                {{ form.correo(class="form-control", id="correo", placeholder="Correo electrónico") }}
+                            </div>
+                            {% if form.correo.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.correo.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Ingrese un correo electrónico válido.</div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-primary next-step">
+                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Credentials -->
+                    <div class="form-step" data-step="2">
+                        <h4 class="step-title">Credenciales de Acceso</h4>
+                        <p class="step-description">Configure el nombre de usuario y contraseña</p>
+
+                        <div class="form-floating mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
+                                {{ form.usuario(class="form-control", id="usuario", placeholder="Usuario") }}
+                            </div>
+                            {% if form.usuario.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.usuario.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">El nombre de usuario debe tener al menos 4 caracteres.</div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.clave(class="form-control", id="clave", placeholder="Contraseña") }}
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {% if form.clave.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.clave.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="password-strength mb-4">
+                            <div class="strength-meter">
+                                <div class="strength-meter-fill" data-strength="0"></div>
+                            </div>
+                            <div class="strength-text">Fuerza de la contraseña: <span>Débil</span></div>
+                            <div class="password-requirements">
+                                <p class="requirement" data-requirement="length"><i class="fas fa-times-circle"></i> Al menos 6 caracteres</p>
+                                <p class="requirement" data-requirement="uppercase"><i class="fas fa-times-circle"></i> Al menos una mayúscula</p>
+                                <p class="requirement" data-requirement="lowercase"><i class="fas fa-times-circle"></i> Al menos una minúscula</p>
+                                <p class="requirement" data-requirement="number"><i class="fas fa-times-circle"></i> Al menos un número</p>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-secondary prev-step">
+                                <i class="fas fa-arrow-left me-2"></i> Anterior
+                            </button>
+                            <button type="button" class="btn btn-primary next-step">
+                                Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Role and Permissions -->
+                    <div class="form-step" data-step="3">
+                        <h4 class="step-title">Rol y Permisos</h4>
+                        <p class="step-description">Seleccione el rol del usuario en el sistema</p>
+
+                        <div class="role-selection mb-4">
+                            <label class="form-label">Seleccione un rol:</label>
+                            <div class="role-cards">
+                                <div class="role-card" data-role="administrador">
+                                    <div class="role-icon admin-icon">
+                                        <i class="fas fa-user-shield"></i>
+                                    </div>
+                                    <div class="role-info">
+                                        <h5>Administrador</h5>
+                                        <p>Control total del sistema</p>
+                                    </div>
+                                    <div class="role-check">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                <div class="role-card" data-role="profesor">
+                                    <div class="role-icon teacher-icon">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                    </div>
+                                    <div class="role-info">
+                                        <h5>Profesor</h5>
+                                        <p>Gestión de cursos y estudiantes</p>
+                                    </div>
+                                    <div class="role-check">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                <div class="role-card" data-role="jefe_departamento">
+                                    <div class="role-icon head-icon">
+                                        <i class="fas fa-sitemap"></i>
+                                    </div>
+                                    <div class="role-info">
+                                        <h5>Jefe de Departamento</h5>
+                                        <p>Gestión departamental</p>
+                                    </div>
+                                    <div class="role-check">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                <div class="role-card" data-role="estudiante">
+                                    <div class="role-icon student-icon">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </div>
+                                    <div class="role-info">
+                                        <h5>Estudiante</h5>
+                                        <p>Acceso a cursos y actividades</p>
+                                    </div>
+                                    <div class="role-check">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            {{ form.rol(class="d-none", id="rol") }}
+                            {% if form.rol.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.rol.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-secondary prev-step">
+                                <i class="fas fa-arrow-left me-2"></i> Anterior
+                            </button>
+                            {{ form.submit(class="btn btn-success") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section animate-on-scroll">
+        <div class="card">
+            <div class="card-body">
+                <h5><i class="fas fa-info-circle me-2"></i>Información Importante</h5>
+                <ul class="help-list">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Todos los campos son obligatorios.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>La contraseña debe tener al menos 6 caracteres.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>El correo electrónico debe ser válido y único en el sistema.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>El nombre de usuario debe ser único en el sistema.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Multi-step form navigation
+        const formSteps = document.querySelectorAll('.form-step');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const nextButtons = document.querySelectorAll('.next-step');
+        const prevButtons = document.querySelectorAll('.prev-step');
+        
+        nextButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const currentStep = parseInt(this.closest('.form-step').getAttribute('data-step'));
+                const nextStep = currentStep + 1;
+                
+                // Validate current step before proceeding
+                if (validateStep(currentStep)) {
+                    // Hide current step
+                    document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+                    // Show next step
+                    document.querySelector(`.form-step[data-step="${nextStep}"]`).classList.add('active');
+                    
+                    // Update progress indicator
+                    document.querySelector(`.progress-step[data-step="${currentStep}"]`).classList.add('completed');
+                    document.querySelector(`.progress-step[data-step="${nextStep}"]`).classList.add('active');
+                }
+            });
+        });
+        
+        prevButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const currentStep = parseInt(this.closest('.form-step').getAttribute('data-step'));
+                const prevStep = currentStep - 1;
+                
+                // Hide current step
+                document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+                // Show previous step
+                document.querySelector(`.form-step[data-step="${prevStep}"]`).classList.add('active');
+                
+                // Update progress indicator
+                document.querySelector(`.progress-step[data-step="${currentStep}"]`).classList.remove('active');
+                document.querySelector(`.progress-step[data-step="${prevStep}"]`).classList.add('active');
+            });
+        });
+        
+        // Password visibility toggle
+        const togglePassword = document.querySelector('.toggle-password');
+        const passwordField = document.querySelector('#clave');
+        
+        if (togglePassword && passwordField) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                
+                // Toggle eye icon
+                const eyeIcon = this.querySelector('i');
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Password strength meter
+        const passwordInput = document.querySelector('#clave');
+        const strengthMeter = document.querySelector('.strength-meter-fill');
+        const strengthText = document.querySelector('.strength-text span');
+        const requirements = {
+            length: document.querySelector('.requirement[data-requirement="length"]'),
+            uppercase: document.querySelector('.requirement[data-requirement="uppercase"]'),
+            lowercase: document.querySelector('.requirement[data-requirement="lowercase"]'),
+            number: document.querySelector('.requirement[data-requirement="number"]')
+        };
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                
+                // Check length
+                if (password.length >= 6) {
+                    strength += 25;
+                    requirements.length.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.length.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+                
+                // Check uppercase
+                if (/[A-Z]/.test(password)) {
+                    strength += 25;
+                    requirements.uppercase.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.uppercase.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+                
+                // Check lowercase
+                if (/[a-z]/.test(password)) {
+                    strength += 25;
+                    requirements.lowercase.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.lowercase.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+                
+                // Check numbers
+                if (/[0-9]/.test(password)) {
+                    strength += 25;
+                    requirements.number.querySelector('i').className = 'fas fa-check-circle text-success';
+                } else {
+                    requirements.number.querySelector('i').className = 'fas fa-times-circle text-danger';
+                }
+                
+                // Update strength meter
+                strengthMeter.style.width = `${strength}%`;
+                strengthMeter.setAttribute('data-strength', Math.ceil(strength / 25));
+                
+                // Update strength text
+                if (strength <= 25) {
+                    strengthText.textContent = 'Débil';
+                    strengthText.className = 'text-danger';
+                } else if (strength <= 50) {
+                    strengthText.textContent = 'Moderada';
+                    strengthText.className = 'text-warning';
+                } else if (strength <= 75) {
+                    strengthText.textContent = 'Buena';
+                    strengthText.className = 'text-info';
+                } else {
+                    strengthText.textContent = 'Fuerte';
+                    strengthText.className = 'text-success';
+                }
+            });
+        }
+        
+        // Role selection
+        const roleCards = document.querySelectorAll('.role-card');
+        const roleSelect = document.querySelector('#rol');
+        
+        console.log(roleCards);
+        console.log(roleSelect);
+
+        roleCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove active class from all cards
+                roleCards.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked card
+                this.classList.add('active');
+                
+                // Update hidden select value
+                const role = this.getAttribute('data-role');
+                roleSelect.value = role;
+            });
+        });
+        
+        // Set initial role selection based on select value
+        if (roleSelect && roleSelect.value) {
+            const initialRole = roleSelect.value;
+            const roleCard = document.querySelector(`.role-card[data-role="${initialRole}"]`);
+            if (roleCard) {
+                roleCard.classList.add('active');
+            }
+        }
+        
+        // Form validation
+        function validateStep(step) {
+            let isValid = true;
+            
+            if (step === 1) {
+                const nombreCompleto = document.querySelector('#nombre_completo');
+                const correo = document.querySelector('#correo');
+                
+                if (!nombreCompleto.value.trim()) {
+                    showError(nombreCompleto, 'El nombre completo es obligatorio');
+                    isValid = false;
+                } else {
+                    clearError(nombreCompleto);
+                }
+                
+                if (!correo.value.trim()) {
+                    showError(correo, 'El correo electrónico es obligatorio');
+                    isValid = false;
+                } else if (!isValidEmail(correo.value)) {
+                    showError(correo, 'Ingrese un correo electrónico válido');
+                    isValid = false;
+                } else {
+                    clearError(correo);
+                }
+            } else if (step === 2) {
+                const usuario = document.querySelector('#usuario');
+                const clave = document.querySelector('#clave');
+                
+                if (!usuario.value.trim()) {
+                    showError(usuario, 'El nombre de usuario es obligatorio');
+                    isValid = false;
+                } else if (usuario.value.length < 4) {
+                    showError(usuario, 'El nombre de usuario debe tener al menos 4 caracteres');
+                    isValid = false;
+                } else {
+                    clearError(usuario);
+                }
+                
+                if (!clave.value.trim()) {
+                    showError(clave, 'La contraseña es obligatoria');
+                    isValid = false;
+                } else if (clave.value.length < 6) {
+                    showError(clave, 'La contraseña debe tener al menos 6 caracteres');
+                    isValid = false;
+                } else {
+                    clearError(clave);
+                }
+            }
+            
+            return isValid;
+        }
+        
+        function showError(input, message) {
+            const formGroup = input.closest('.form-floating');
+            const errorDiv = formGroup.querySelector('.invalid-feedback') || document.createElement('div');
+            
+            if (!formGroup.querySelector('.invalid-feedback')) {
+                errorDiv.className = 'invalid-feedback d-block';
+                errorDiv.innerHTML = `<span>${message}</span>`;
+                formGroup.appendChild(errorDiv);
+            } else {
+                errorDiv.innerHTML = `<span>${message}</span>`;
+            }
+            
+            input.classList.add('is-invalid');
+        }
+        
+        function clearError(input) {
+            const formGroup = input.closest('.form-floating');
+            const errorDiv = formGroup.querySelector('.invalid-feedback');
+            
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+            
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+        
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        // Form submission validation
+        const createUserForm = document.querySelector('#createUserForm');
+        
+        if (createUserForm) {
+            createUserForm.addEventListener('submit', function(event) {
+                // Validate all steps
+                let isValid = true;
+                
+                for (let i = 1; i <= 3; i++) {
+                    if (!validateStep(i)) {
+                        isValid = false;
+                        
+                        // Show the step with errors
+                        formSteps.forEach(step => step.classList.remove('active'));
+                        progressSteps.forEach(step => step.classList.remove('active'));
+                        
+                        document.querySelector(`.form-step[data-step="${i}"]`).classList.add('active');
+                        document.querySelector(`.progress-step[data-step="${i}"]`).classList.add('active');
+                        
+                        break;
+                    }
+                }
+                
+                // Check if a role is selected
+                const roleSelect = document.querySelector('#rol');
+                if (!roleSelect.value) {
+                    isValid = false;
+                    alert('Por favor, seleccione un rol para el usuario.');
+                    
+                    // Show the role step
+                    formSteps.forEach(step => step.classList.remove('active'));
+                    progressSteps.forEach(step => step.classList.remove('active'));
+                    
+                    document.querySelector(`.form-step[data-step="3"]`).classList.add('active');
+                    document.querySelector(`.progress-step[data-step="3"]`).classList.add('active');
+                }
+                
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        }
+        
+        // Animate elements on scroll
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
+{% endblock %}

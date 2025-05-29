@@ -1,0 +1,571 @@
+/* User Form Styles */
+.user-form-container {
+    padding: 2rem 0;
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all var(--transition-normal);
+}
+
+.page-header.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.header-content h2 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+}
+
+.header-content h2 i {
+    color: var(--primary-color);
+}
+
+.header-content p {
+    margin-bottom: 0;
+}
+
+.header-actions .btn {
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.header-actions .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow);
+}
+
+/* Form Card */
+.form-card-container {
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all var(--transition-normal);
+}
+
+.form-card-container.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.form-card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+/* Form Progress */
+.form-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+    padding: 0 1rem;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    max-width: 120px;
+}
+
+.step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    transition: all var(--transition-normal);
+}
+
+.step-icon i {
+    color: var(--gray-medium);
+    font-size: 1.25rem;
+    transition: all var(--transition-normal);
+}
+
+.step-label {
+    font-size: 0.875rem;
+    color: var(--gray-medium);
+    text-align: center;
+    transition: all var(--transition-normal);
+}
+
+.progress-step.active .step-icon {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 5px rgba(67, 97, 238, 0.2);
+}
+
+.progress-step.active .step-icon i {
+    color: white;
+}
+
+.progress-step.active .step-label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.progress-step.completed .step-icon {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.progress-step.completed .step-icon i {
+    color: white;
+}
+
+.progress-connector {
+    flex: 1;
+    height: 2px;
+    background-color: #dee2e6;
+    position: relative;
+    z-index: 0;
+}
+
+.progress-connector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.progress-step.completed + .progress-connector::before {
+    width: 100%;
+}
+
+/* Multi-step Form */
+.multi-step-form {
+    position: relative;
+}
+
+.form-step {
+    display: none;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.form-step.active {
+    display: block;
+}
+
+.step-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--dark-color);
+}
+
+.step-description {
+    color: var(--gray-medium);
+    margin-bottom: 1.5rem;
+}
+
+/* Form Controls */
+.form-floating {
+    position: relative;
+}
+
+.form-floating label {
+    left: 50px;
+}
+
+.input-group-text {
+    background-color: transparent;
+    border-right: none;
+    color: var(--gray-medium);
+}
+
+.form-control {
+    border-left: none;
+    transition: all var(--transition-normal);
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #dee2e6;
+    border-left: none;
+}
+
+.form-control:focus + .input-group-text {
+    border-color: #dee2e6;
+}
+
+.form-text {
+    font-size: 0.75rem;
+    color: var(--gray-medium);
+    margin-top: 0.25rem;
+}
+
+.invalid-feedback {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.toggle-password {
+    border-left: none;
+    background-color: transparent;
+    color: var(--gray-medium);
+    transition: all var(--transition-normal);
+}
+
+.toggle-password:hover {
+    color: var(--primary-color);
+}
+
+.toggle-password:focus {
+    box-shadow: none;
+    border-color: #dee2e6;
+    border-left: none;
+}
+
+/* Password Strength Meter */
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-meter {
+    height: 5px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.strength-meter-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 5px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-meter-fill[data-strength="0"] {
+    width: 0;
+}
+
+.strength-meter-fill[data-strength="1"] {
+    width: 25%;
+    background-color: var(--danger-color);
+}
+
+.strength-meter-fill[data-strength="2"] {
+    width: 50%;
+    background-color: var(--warning-color);
+}
+
+.strength-meter-fill[data-strength="3"] {
+    width: 75%;
+    background-color: var(--info-color);
+}
+
+.strength-meter-fill[data-strength="4"] {
+    width: 100%;
+    background-color: var(--success-color);
+}
+
+.strength-text {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.password-requirements {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.requirement {
+    font-size: 0.75rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.requirement i {
+    margin-right: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Role Selection */
+.role-selection {
+    margin-top: 1.5rem;
+}
+
+.role-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.role-card {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow);
+    border-color: var(--primary-color);
+}
+
+.role-card.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+}
+
+.role-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.role-icon i {
+    color: white;
+    font-size: 1.25rem;
+}
+
+.admin-icon {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.teacher-icon {
+    background: linear-gradient(135deg, var(--secondary-color), #560bad);
+    box-shadow: 0 5px 15px rgba(114, 9, 183, 0.3);
+}
+
+.head-icon {
+    background: linear-gradient(135deg, var(--success-color), #04a777);
+    box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
+}
+
+.student-icon {
+    background: linear-gradient(135deg, var(--info-color), #0077b6);
+    box-shadow: 0 5px 15px rgba(17, 138, 178, 0.3);
+}
+
+.role-info h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--dark-color);
+}
+
+.role-info p {
+    font-size: 0.75rem;
+    color: var(--gray-medium);
+    margin-bottom: 0;
+}
+
+.role-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--primary-color);
+    opacity: 0;
+    transition: all var(--transition-normal);
+}
+
+.role-card.active .role-check {
+    opacity: 1;
+}
+
+/* Form Navigation */
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.form-navigation .btn {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.form-navigation .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow);
+}
+
+/* Help Section */
+.help-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all var(--transition-normal);
+}
+
+.help-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.help-section .card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.help-section h5 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+}
+
+.help-section h5 i {
+    color: var(--info-color);
+}
+
+.help-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-list li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.help-list li:last-child {
+    margin-bottom: 0;
+}
+
+.help-list li i {
+    color: var(--success-color);
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        margin-top: 1rem;
+    }
+    
+    .role-cards {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .form-progress {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .progress-step {
+        flex-direction: row;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .step-icon {
+        margin-bottom: 0;
+        margin-right: 1rem;
+    }
+    
+    .progress-connector {
+        width: 2px;
+        height: 20px;
+        margin-left: 24px;
+    }
+    
+    .progress-connector::before {
+        width: 100%;
+        height: 0;
+        transition: height 0.3s ease;
+    }
+    
+    .progress-step.completed + .progress-connector::before {
+        height: 100%;
+    }
+    
+    .password-requirements {
+        grid-template-columns: 1fr;
+    }
+    
+    .role-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-navigation {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .form-navigation .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-card {
+        padding: 1rem;
+    }
+    
+    .step-title {
+        font-size: 1.25rem;
+    }
+}

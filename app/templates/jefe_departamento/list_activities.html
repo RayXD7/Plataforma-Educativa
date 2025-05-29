@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/jefe_departamento/activities.css') }}">
+{% endblock %}
+
+{% block navbar %}
+{% include 'components/navbar-dash.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center animate-on-scroll mb-4">
+        <h2 class="fw-bold"><i class="fas fa-clipboard-check me-2 text-primary"></i>Actividades Enviadas</h2>
+        <div>
+            <a href="{{ url_for('jefe_departamento.export_activities') }}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-file-export me-1"></i>Exportar CSV
+            </a>
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-home me-1"></i>Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="row g-3 animate-on-scroll mb-4">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchActivity" class="form-control" placeholder="Buscar título o estado...">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select id="filterTipo" class="form-select">
+                <option value="all" selected>Todos los Tipos</option>
+                <option value="OFICIAL">Oficial</option>
+                <option value="NO_OFICIAL">No Oficial</option>
+            </select>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <select id="filterEstado" class="form-select d-inline-block w-auto">
+                <option value="all" selected>Todos los Estados</option>
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="COMPLETADA">Completada</option>
+                <option value="ENVIADA">Enviada</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row row-cols-1 row-cols-md-4 g-4 animate-on-scroll mb-5">
+        <div class="col">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h5 class="card-title">{{ activities|selectattr('tipo','equalto','OFICIAL')|list|length }}</h5>
+                    <p class="card-text">Oficiales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                    <h5 class="card-title">{{ activities|selectattr('tipo','equalto','NO_OFICIAL')|list|length }}</h5>
+                    <p class="card-text">No Oficiales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-paper-plane fa-2x text-warning mb-2"></i>
+                    <h5 class="card-title">{{ activities|selectattr('estado','equalto','ENVIADA')|list|length }}</h5>
+                    <p class="card-text">Enviadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-hourglass-half fa-2x text-secondary mb-2"></i>
+                    <h5 class="card-title">{{ activities|selectattr('estado','equalto','PENDIENTE')|list|length }}</h5>
+                    <p class="card-text">Pendientes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activities Table -->
+    <div class="table-responsive animate-on-scroll" style="min-width: 700px;">
+        <table class="table table-hover align-middle" id="submittedActivitiesTable">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <!-- <th>Estado</th> -->
+                    <th>Oficial</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                <tr data-tipo="{{ activity.tipo.name }}" data-estado="{{ activity.estado }}">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ activity.titulo }}</td>
+                    <td>{{ activity.tipo.value }}</td>
+                    <td>{{ activity.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <!-- <td>{{ activity.estado }}</td> -->
+                    <td>
+                        <form method="POST"
+                            action="{{ url_for('jefe_departamento.toggle_tipo', actividad_id=activity.id) }}">
+                            {{ form_csrf.hidden_tag() }}
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="oficialSwitch{{ activity.id }}"
+                                    name="toggle_tipo" onchange="this.form.submit()" {% if activity.tipo.name=='OFICIAL'
+                                    %}checked{% endif %}>
+                                <label class="form-check-label" for="oficialSwitch{{ activity.id }}"></label>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle me-2"></i>No hay actividades enviadas.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Animate on scroll
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.animate-on-scroll').forEach(el => obs.observe(el));
+
+        // Search & Filter
+        const search = document.getElementById('searchActivity');
+        const filterTipo = document.getElementById('filterTipo');
+        const filterEstado = document.getElementById('filterEstado');
+        const rows = document.querySelectorAll('#submittedActivitiesTable tbody tr');
+
+        function applyFilters() {
+            const term = search.value.toLowerCase();
+            const tipo = filterTipo.value;
+            const estado = filterEstado.value;
+            rows.forEach(row => {
+                const text = row.cells[1].textContent.toLowerCase();
+                const rowTipo = row.dataset.tipo;
+                const rowEstado = row.dataset.estado;
+                const show = text.includes(term)
+                    && (tipo === 'all' || rowTipo === tipo)
+                    && (estado === 'all' || rowEstado === estado);
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        [search, filterTipo, filterEstado].forEach(el => el.addEventListener('input', applyFilters));
+    });
+</script>
+{% endblock %}
