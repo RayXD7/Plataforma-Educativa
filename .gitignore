@@ -1,0 +1,10 @@
+# Ignorar archivos de entorno
+.env
+
+# Ignorar carpetas de instancias
+instance/
+
+# Otros archivos o carpetas a ignorar
+*.log
+__pycache__/
+*.pyc
