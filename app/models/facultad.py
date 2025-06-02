@@ -8,7 +8,12 @@ from app.extensions import db
 class Facultad(db.Model):
     __tablename__ = 'facultad'
     id     = Column(Integer, primary_key=True, autoincrement=True)
-    nombre = Column(String(100), unique=True, nullable=False) 
+    nombre = Column(String(100), unique=True, nullable=False)
+    carrera = relationship()
+
+class Carrera(db.Model):
+    id     = Column(Integer, primary_key=True, autoincrement=True)
+    nombre  = Column(String(100), unique=True, nullable=False)
 
     profesores = relationship(
         "Usuario", back_populates="facultad",

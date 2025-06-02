@@ -35,7 +35,7 @@ def list_activities():
     page = request.args.get('page', 1, type=int)
     per_page = 5
     # Solo actividades enviadas y oficiales
-    query = Actividad.query.filter_by(enviada=True, tipo=TipoActividadEnum.OFICIAL)
+    query = Actividad.query.filter_by(enviada=True, tipo=TipoActividadEnum.NO_OFICIAL)
     pagination = query.order_by(Actividad.fecha.desc()).paginate(page=page, per_page=per_page, error_out=False)
     return render_template(
         'jefe_departamento/list_activities.html',

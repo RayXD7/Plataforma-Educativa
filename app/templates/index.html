@@ -133,8 +133,9 @@
                                     <th>Título</th>
                                     <!-- <th>Tipo</th> -->
                                     <th>Fecha</th>
+                                    <th>Descrpcion</th>
                                     <!-- <th>Estado</th> -->
-                                    <th>Registrado por</th>
+                                    <th>Responsables</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -145,6 +146,10 @@
                                     <td>
                                         <i class="far fa-calendar-alt me-2"></i>
                                         {{ activity.fecha.strftime('%d/%m/%Y %H:%M') }}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {{ activity.descripcion }}
                                     </td>
                                     <!-- <td><span class="badge bg-light text-dark">{{ activity.estado }}</span></td> -->
                                     <td><i class="fas fa-user me-1"></i> {{ activity.creador.usuario }}</td>

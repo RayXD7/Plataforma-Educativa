@@ -5,13 +5,13 @@ class Estudiante(db.Model):
     __tablename__ = 'estudiante'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     profesor_id = db.Column(db.Integer, db.ForeignKey('profesor.id'), nullable=False)
-
     usuario = db.relationship("Usuario", back_populates="estudiante")
     profesor = db.relationship("Profesor", back_populates="estudiantes")
 
 class Profesor(db.Model):
     __tablename__ = 'profesor'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    es_ppa = db.Column(db.Boolean, default=False)
     id_departamento = db.Column(db.Integer, db.ForeignKey('jefe_departamento.id'), nullable=False)
 
     usuario = db.relationship("Usuario", back_populates="profesor", uselist=False)
